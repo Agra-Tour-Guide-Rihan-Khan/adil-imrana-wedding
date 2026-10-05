@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>The Royal Wedding | Imrana & Adil Khan</title>
+  
+  <!-- Elite Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Amiri:ital,wght@0,700;1,700&family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --sage-darkest: #1a2a1f;
+      --sage-dark: #24382b;
+      --sage-mid: #38513f;
+      --sage-soft: #55725e;
+      --sage-subtle: #eaf1ec;
+      --gold-dark: #82621b;
+      --gold-primary: #cba358;
+      --gold-bright: #ecd394;
+      --gold-light: #fbf1d8;
+      --cream-lux: #fbf8f3;
+      --cream-sheet: #fffdf9;
+      --text-dark: #1f2721;
+      --text-muted: #626f65;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #0f1611;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-dark);
+      overflow-x: hidden;
+      overflow-y: hidden;
+    }
+
+    /* Ambient Rose Petals & Golden Fireflies Canvas */
+    #ambientCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 8500;
+    }
+
+    /* Audio Pill */
+    .audio-pill {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 99999;
+      background: rgba(26, 42, 31, 0.88);
+      border: 1px solid rgba(203, 163, 88, 0.6);
+      color: var(--gold-light);
+      padding: 6px 14px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 15px rgba(203, 163, 88, 0.2);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .audio-pill:active { transform: scale(0.92); }
+    .music-waves {
+      display: flex;
+      align-items: flex-end;
+      gap: 2.5px;
+      height: 12px;
+    }
+    .music-waves span {
+      width: 2.5px;
+      height: 100%;
+      background: var(--gold-bright);
+      border-radius: 2px;
+      animation: soundWave 1.2s infinite ease-in-out alternate;
+    }
+    .music-waves span:nth-child(2) { animation-delay: 0.2s; height: 60%; }
+    .music-waves span:nth-child(3) { animation-delay: 0.4s; height: 80%; }
+    .music-waves span:nth-child(4) { animation-delay: 0.1s; height: 40%; }
+    .audio-pill.paused .music-waves span { animation: none; height: 3px; opacity: 0.4; }
+    .audio-text {
+      font-size: 10.5px;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    @keyframes soundWave {
+      0% { height: 15%; }
+      100% { height: 100%; }
+    }
+
+    /* Container Frame */
+    .app-container {
+      max-width: 460px;
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+      background: var(--cream-lux);
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
+      overflow-x: hidden;
+    }
+
+    /* ============================================================
+       GATEFOLD OVERLAY SCREEN (SCREEN 1 - 3D DOUBLE DOORS)
+       ============================================================ */
+    .gate-overlay {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 460px;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 9000;
+      perspective: 1400px;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .door {
+      width: 50%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      background: radial-gradient(circle at 50% 45%, #324738 0%, #1a2a1f 100%);
+      transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.5s ease 0.9s;
+      backface-visibility: hidden;
+      overflow: hidden;
+      box-shadow: inset 0 0 45px rgba(0,0,0,0.7);
+    }
+
+    .door-left {
+      left: 0;
+      transform-origin: left center;
+      border-right: 1.5px solid rgba(203, 163, 88, 0.8);
+    }
+
+    .door-right {
+      right: 0;
+      transform-origin: right center;
+      border-left: 1.5px solid rgba(203, 163, 88, 0.8);
+    }
+
+    .door::after {
+      content: '';
+      position: absolute;
+      top: 16px;
+      bottom: 16px;
+      border: 1px solid rgba(203, 163, 88, 0.45);
+      pointer-events: none;
+    }
+    .door-left::after { left: 16px; right: 4px; }
+    .door-right::after { left: 4px; right: 16px; }
+
+    .door-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.16;
+      background-image: radial-gradient(var(--gold-bright) 1.5px, transparent 1.5px);
+      background-size: 22px 22px;
+      pointer-events: none;
+    }
+
+    .crest-arch {
+      position: absolute;
+      top: 8%;
+      width: 130px;
+      height: 130px;
+      border: 1.2px dashed rgba(203, 163, 88, 0.5);
+      border-radius: 50% 50% 0 0;
+      pointer-events: none;
+    }
+    .door-left .crest-arch { right: -65px; border-right: none; }
+    .door-right .crest-arch { left: -65px; border-left: none; }
+
+    /* ASSALAMU ALAIKUM IN ROYAL GOLDEN PLAQUE BADGE */
+    .salam-badge-half {
+      position: absolute;
+      top: 25%;
+      height: 54px;
+      width: 140px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(17, 27, 20, 0.95) 0%, rgba(36, 52, 41, 0.98) 100%);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(203, 163, 88, 0.3);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .door-right .salam-badge-half {
+      left: 0;
+      border-top: 1.5px solid var(--gold-primary);
+      border-bottom: 1.5px solid var(--gold-primary);
+      border-right: 1.5px solid var(--gold-primary);
+      border-left: none;
+      border-radius: 0 28px 28px 0;
+      justify-content: flex-start;
+      padding-left: 14px;
+    }
+
+    .door-left .salam-badge-half {
+      right: 0;
+      border-top: 1.5px solid var(--gold-primary);
+      border-bottom: 1.5px solid var(--gold-primary);
+      border-left: 1.5px solid var(--gold-primary);
+      border-right: none;
+      border-radius: 28px 0 0 28px;
+      justify-content: flex-end;
+      padding-right: 14px;
+    }
+
+    .salam-text {
+      font-family: 'Amiri', serif;
+      font-size: 27px;
+      font-weight: 700;
+      color: var(--gold-bright);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 12px rgba(236, 211, 148, 0.5);
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    /* WAX SEAL (TAP TO OPEN) */
+    .seal-wrapper {
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .seal-medallion {
+      width: 128px;
+      height: 128px;
+      background: radial-gradient(circle, #fcf4de 0%, #caa156 55%, #7a540f 100%);
+      border-radius: 50%;
+      box-shadow: 0 14px 35px rgba(0,0,0,0.6), inset 0 0 18px rgba(255,255,255,0.7), 0 0 30px rgba(203, 163, 88, 0.4);
+      border: 3px double #5a3c07;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      animation: pulseSeal 2.2s infinite ease-in-out;
+      transition: transform 0.2s ease;
+    }
+    .seal-medallion:active { transform: scale(0.92); }
+
+    @keyframes pulseSeal {
+      0%, 100% { transform: scale(1); box-shadow: 0 12px 30px rgba(0,0,0,0.55), 0 0 20px rgba(203, 163, 88, 0.35); }
+      50% { transform: scale(1.06); box-shadow: 0 18px 45px rgba(203, 163, 88, 0.8), 0 0 35px rgba(250, 238, 207, 0.9); }
+    }
+
+    .seal-ring-icon {
+      font-size: 26px;
+      margin-bottom: 2px;
+    }
+
+    .seal-text-main {
+      font-family: 'Cinzel', serif;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #312003;
+      text-transform: uppercase;
+    }
+
+    .seal-text-sub {
+      font-size: 8.5px;
+      letter-spacing: 1.2px;
+      color: #553909;
+      margin-top: 3px;
+      font-weight: 700;
+    }
+
+    .gate-overlay.opened .door-left {
+      transform: rotateY(-118deg);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .gate-overlay.opened .door-right {
+      transform: rotateY(118deg);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .gate-overlay.opened .seal-wrapper {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.2);
+      transition: all 0.5s ease;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       STAGE 2: AESTHETIC HIGH-DETAIL INVITATION CARD
+       ============================================================ */
+    .card-content {
+      padding: 35px 18px 80px;
+      background: var(--cream-lux);
+      background-image: 
+        radial-gradient(#d3c4ad 0.8px, transparent 0.8px),
+        linear-gradient(to bottom, #fffefc 0%, #f6eee0 100%);
+      background-size: 18px 18px, 100% 100%;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .royal-arch-banner {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .royal-dome-svg {
+      width: 110px;
+      height: 48px;
+      fill: none;
+      stroke: var(--gold-primary);
+      stroke-width: 1.4;
+      opacity: 0.9;
+      margin: 0 auto;
+    }
+
+    .bismillah-center {
+      text-align: center;
+      font-family: 'Amiri', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--sage-darkest);
+      margin-bottom: 3px;
+      letter-spacing: 0.5px;
+    }
+
+    .bismillah-translation {
+      text-align: center;
+      font-size: 11px;
+      font-style: italic;
+      color: var(--text-muted);
+      letter-spacing: 0.8px;
+      margin-bottom: 24px;
+    }
+
+    .invitation-intro {
+      text-align: center;
+      font-size: 11.5px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--sage-mid);
+      font-weight: 600;
+      line-height: 1.8;
+      margin-bottom: 28px;
+      padding: 0 10px;
+    }
+
+    /* COUPLE NAMES CARD */
+    .couple-card {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1.5px solid rgba(203, 163, 88, 0.5);
+      border-radius: 26px;
+      padding: 36px 20px;
+      text-align: center;
+      box-shadow: 0 18px 40px rgba(34, 53, 40, 0.08), inset 0 0 25px rgba(250, 238, 207, 0.4);
+      position: relative;
+      margin-bottom: 30px;
+      backdrop-filter: blur(10px);
+      transition: transform 0.2s ease-out;
+    }
+
+    .couple-card::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1px dashed rgba(203, 163, 88, 0.45);
+      border-radius: 18px;
+      pointer-events: none;
+    }
+
+    .person-name {
+      font-family: 'Alex Brush', cursive;
+      font-size: 52px;
+      color: var(--sage-darkest);
+      line-height: 1.05;
+      margin-bottom: 4px;
+    }
+
+    .person-parentage {
+      font-size: 13px;
+      color: var(--gold-dark);
+      font-weight: 600;
+      letter-spacing: 0.6px;
+    }
+
+    .ampersand-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin: 14px 0;
+    }
+
+    .ampersand-line {
+      height: 1px;
+      width: 50px;
+      background: linear-gradient(to right, transparent, var(--gold-primary), transparent);
+    }
+
+    .ampersand-sign {
+      font-family: 'Cinzel Decorative', 'Cinzel', serif;
+      font-size: 28px;
+      color: var(--gold-primary);
+      font-weight: 700;
+    }
+
+    .welcome-request-quote {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-dark);
+      line-height: 1.8;
+      margin: 0 auto 30px;
+      max-width: 320px;
+    }
+
+    /* SCRATCH TO REVEAL DATE */
+    .scratch-section {
+      text-align: center;
+      margin: 25px 0 35px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .section-label-ornate {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Cinzel', serif;
+      font-size: 14.5px;
+      letter-spacing: 2.5px;
+      color: var(--sage-darkest);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+    .section-label-ornate span { color: var(--gold-primary); }
+
+    .scratch-instruction {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .scratch-card-box {
+      width: 270px;
+      height: 220px;
+      position: relative;
+      margin: 0 auto;
+      user-select: none;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.12);
+      background: #ffffff;
+      border: 2px solid var(--gold-bright);
+    }
+
+    .revealed-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, #fffdf8 0%, #f6ecdc 100%);
+      padding: 15px;
+      text-align: center;
+    }
+
+    .revealed-heart-icon {
+      color: #c94646;
+      font-size: 30px;
+      margin-bottom: 6px;
+      animation: heartbeat 1.6s infinite ease-in-out;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.18); }
+    }
+
+    .revealed-day {
+      font-family: 'Cinzel', serif;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--gold-dark);
+      letter-spacing: 2px;
+    }
+
+    .revealed-date {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--sage-darkest);
+      margin: 4px 0;
+    }
+
+    .revealed-year {
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--text-muted);
+    }
+
+    #scratchCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    /* SCROLL DOWN PROMPT BANNER (HINGLISH) */
+    .scroll-guide-banner {
+      width: 100%;
+      max-width: 320px;
+      margin: 20px auto 10px;
+      display: none;
+      animation: bounceDown 1.8s infinite;
+    }
+
+    .scroll-guide-banner.show {
+      display: block;
+    }
+
+    .scroll-btn-link {
+      display: block;
+      background: linear-gradient(135deg, var(--sage-darkest), var(--sage-mid));
+      color: #ffffff;
+      text-align: center;
+      padding: 14px 20px;
+      border-radius: 35px;
+      border: 1.5px solid var(--gold-bright);
+      box-shadow: 0 8px 25px rgba(26, 42, 31, 0.35);
+      text-decoration: none;
+    }
+
+    .scroll-btn-link .eng-text {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      display: block;
+      color: var(--gold-light);
+    }
+    .scroll-btn-link .hin-text {
+      font-size: 11px;
+      opacity: 0.95;
+      display: block;
+      margin-top: 3px;
+    }
+
+    @keyframes bounceDown {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(8px); }
+      60% { transform: translateY(4px); }
+    }
+
+    /* COUNTDOWN TIMER */
+    .countdown-card {
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 22px;
+      padding: 26px 16px;
+      text-align: center;
+      margin-bottom: 35px;
+      border: 1px solid rgba(203, 163, 88, 0.45);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .countdown-title {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--sage-darkest);
+      font-weight: 800;
+    }
+
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .time-slot {
+      background: #faf6ee;
+      border-radius: 14px;
+      padding: 12px 4px;
+      border: 1px solid #ebdcc5;
+      box-shadow: inset 0 0 10px rgba(203, 163, 88, 0.12);
+    }
+
+    .time-slot .number {
+      font-family: 'Cinzel', serif;
+      font-size: 23px;
+      font-weight: 800;
+      color: var(--sage-darkest);
+      display: block;
+    }
+
+    .time-slot .label {
+      font-size: 9.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 3px;
+      font-weight: 600;
+    }
+
+    /* SECTION HEADERS */
+    .section-header-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 35px 0 24px;
+    }
+    .header-gold-line {
+      height: 1px;
+      flex: 1;
+      max-width: 60px;
+      background: linear-gradient(to right, transparent, var(--gold-primary));
+    }
+    .header-gold-line.reverse {
+      background: linear-gradient(to left, transparent, var(--gold-primary));
+    }
+    .section-main-heading {
+      font-family: 'Cinzel', serif;
+      font-size: 16.5px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      color: var(--sage-darkest);
+      text-transform: uppercase;
+    }
+
+    /* PROGRAMME TIMELINE */
+    .timeline-container {
+      position: relative;
+      margin: 15px 0 35px;
+      padding-left: 24px;
+    }
+
+    .timeline-container::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: 8px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--gold-bright), var(--gold-dark));
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 22px;
+      padding: 16px 20px;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #ebdcc5;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -22px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      background: var(--gold-primary);
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px var(--sage-mid);
+    }
+
+    .timeline-event {
+      font-family: 'Cinzel', serif;
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--sage-darkest);
+      letter-spacing: 1px;
+    }
+
+    .timeline-time {
+      font-size: 13.5px;
+      color: var(--gold-dark);
+      font-weight: 700;
+    }
+
+    /* VENUE & RESIDENCE CARDS */
+    .venue-card {
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 28px 20px;
+      text-align: center;
+      border: 1.5px solid rgba(203, 163, 88, 0.45);
+      margin-bottom: 24px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
+    }
+
+    .venue-icon-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #faf5eb;
+      border: 1px solid var(--gold-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin: 0 auto 12px;
+      box-shadow: 0 4px 12px rgba(203, 163, 88, 0.15);
+    }
+
+    .venue-name {
+      font-family: 'Cinzel', serif;
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--sage-darkest);
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+
+    .venue-address {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .btn-maps {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--sage-darkest), var(--sage-mid));
+      color: var(--gold-light);
+      text-decoration: none;
+      padding: 13px 24px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      border: 1px solid var(--gold-bright);
+      box-shadow: 0 6px 20px rgba(26, 42, 31, 0.25);
+    }
+
+    /* COMPLIMENTS FROM LITTLE ONES */
+    .little-ones-card {
+      background: #fdfaf3;
+      border: 1.5px dashed var(--gold-primary);
+      border-radius: 20px;
+      padding: 24px 18px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .little-tag {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--gold-dark);
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .little-names {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--sage-darkest);
+      line-height: 2;
+      letter-spacing: 0.6px;
+    }
+
+    /* INTERACTIVE WISHES / DUA BOX */
+    .wishes-card {
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 26px 18px;
+      border: 1.5px solid rgba(203, 163, 88, 0.45);
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
+    }
+
+    .wishes-title {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--sage-darkest);
+      margin-bottom: 6px;
+    }
+
+    .wishes-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .wishes-input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #ebdcc5;
+      background: #faf6ee;
+      font-family: inherit;
+      font-size: 12.5px;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+      resize: none;
+      outline: none;
+    }
+    .wishes-input:focus { border-color: var(--gold-primary); }
+
+    .btn-send-wishes {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: #25D366;
+      color: #ffffff;
+      padding: 12px;
+      border-radius: 30px;
+      border: none;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    }
+
+    /* RSVP BOX */
+    .rsvp-box {
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 26px 18px;
+      border: 1px solid rgba(203, 163, 88, 0.45);
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
+    }
+
+    .rsvp-title {
+      font-family: 'Cinzel', serif;
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--sage-darkest);
+      margin-bottom: 8px;
+    }
+
+    .rsvp-names {
+      font-size: 13.5px;
+      color: var(--text-dark);
+      font-weight: 600;
+      margin-bottom: 18px;
+      line-height: 1.7;
+    }
+
+    .call-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .call-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #faf6ee;
+      color: var(--sage-darkest);
+      padding: 12px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 13px;
+      border: 1px solid #ebd8bd;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+    }
+
+    /* ============================================================
+       ENHANCED VISIBLE SPIDER WEB WITH HANGING SPIDER (FOOTER ONLY)
+       ============================================================ */
+    .footer-web-container {
+      position: relative;
+      margin-top: 35px;
+      padding-top: 30px;
+      padding-bottom: 25px;
+      border-top: 1px solid #e2d6c3;
+      overflow: hidden;
+    }
+
+    /* Clear, aesthetic Spider Web SVG */
+    .visible-web-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 140px;
+      height: 140px;
+      pointer-events: none;
+      opacity: 0.58; /* Clear and visible */
+      stroke: #876c2b;
+      stroke-width: 1.3;
+      fill: none;
+      filter: drop-shadow(0 1px 2px rgba(203, 163, 88, 0.4));
+    }
+
+    /* Hanging Animated Spider Container */
+    .hanging-spider-wrap {
+      position: absolute;
+      top: 0;
+      left: 72px;
+      pointer-events: none;
+      transform-origin: top center;
+      animation: spiderSway 4.5s ease-in-out infinite;
+      z-index: 5;
+    }
+
+    /* Silk Thread */
+    .spider-thread {
+      width: 1px;
+      height: 52px;
+      background: linear-gradient(to bottom, rgba(135, 108, 43, 0.6), rgba(40, 50, 42, 0.8));
+      margin: 0 auto;
+    }
+
+    /* Realistic Mini Spider SVG */
+    .spider-body-svg {
+      width: 22px;
+      height: 22px;
+      fill: #263329;
+      stroke: #cba358;
+      stroke-width: 0.8;
+      display: block;
+      margin-top: -2px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+
+    @keyframes spiderSway {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(4.5deg); }
+      75% { transform: rotate(-4.5deg); }
+    }
+
+    .footer-blessing {
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.9;
+      position: relative;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Rose Petals & Golden Fireflies Animation Canvas -->
+  <canvas id="ambientCanvas"></canvas>
+
+  <!-- Audio Wave Pill -->
+  <div class="audio-pill" id="audioPill" onclick="toggleAudio()" title="Sound On / Off">
+    <div class="music-waves">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <span class="audio-text" id="audioText">SHAHNAI MUSIC</span>
+  </div>
+
+  <div class="app-container">
+
+    <!-- ============================================================
+         COVER GATEFOLD SCREEN (SCREEN 1 - 3D DOUBLE DOORS)
+         ============================================================ -->
+    <div class="gate-overlay" id="gateOverlay">
+      
+      <!-- Left Door (Arabic Ending: Alaykum inside Gold Badge) -->
+      <div class="door door-left" id="doorLeft">
+        <div class="door-pattern"></div>
+        <div class="crest-arch"></div>
+        
+        <div class="salam-badge-half">
+          <span class="salam-text">عَلَيْكُمْ</span>
+        </div>
+      </div>
+
+      <!-- Right Door (Arabic Starting: As-Salamu inside Gold Badge) -->
+      <div class="door door-right" id="doorRight">
+        <div class="door-pattern"></div>
+        <div class="crest-arch"></div>
+
+        <div class="salam-badge-half">
+          <span class="salam-text">السَّلَامُ</span>
+        </div>
+      </div>
+
+      <!-- Central Tap To Open Button -->
+      <div class="seal-wrapper" id="sealWrapper" onclick="openWeddingDoors(event)" ontouchstart="openWeddingDoors(event)">
+        <div class="seal-medallion">
+          <div class="seal-ring-icon">💍</div>
+          <div class="seal-text-main">TAP TO OPEN</div>
+          <div class="seal-text-sub">INVITATION</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================
+         SCREEN 2: LUXURY AESTHETIC WEDDING CARD
+         ============================================================ -->
+    <div class="card-content" id="cardContent">
+      
+      <!-- Royal Arch Graphic Motif -->
+      <div class="royal-arch-banner">
+        <svg class="royal-dome-svg" viewBox="0 0 110 48">
+          <path d="M 10,48 C 10,22 32,10 55,2 C 78,10 100,22 100,48" />
+          <circle cx="55" cy="2" r="2.8" fill="var(--gold-primary)" />
+        </svg>
+      </div>
+
+      <!-- Bismillah inside Card -->
+      <div class="bismillah-center">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+      <div class="bismillah-translation">In the name of Allah, the Most Gracious, the Most Merciful</div>
+
+      <div class="invitation-intro">
+        Together with their families, we cordially invite you to celebrate the auspicious occasion of the Nikah of
+      </div>
+
+      <!-- NAMES: IMRANA ON TOP, ADIL KHAN BELOW -->
+      <div class="couple-card" id="tiltCard">
+        <div class="person-name">Imrana</div>
+        <div class="person-parentage">(Daughter of Mr. Islamuddin)</div>
+
+        <div class="ampersand-wrap">
+          <div class="ampersand-line"></div>
+          <div class="ampersand-sign">&</div>
+          <div class="ampersand-line"></div>
+        </div>
+
+        <div class="person-name">Adil Khan</div>
+        <div class="person-parentage">(Son of Mr. Meharuddin)</div>
+      </div>
+
+      <div class="welcome-request-quote">
+        Your presence and blessings are highly requested to grace this beautiful union.
+      </div>
+
+      <!-- SCRATCH TO REVEAL DATE -->
+      <div class="scratch-section">
+        <div class="section-label-ornate">
+          <span>✨</span> SAVE THE DATE <span>✨</span>
+        </div>
+        <div class="scratch-instruction">Wedding ki date dekhne ke liye finger se scratch karein</div>
+
+        <div class="scratch-card-box">
+          <div class="revealed-content">
+            <div class="revealed-heart-icon">❤️</div>
+            <div class="revealed-day">WEDNESDAY</div>
+            <div class="revealed-date">NOV 18</div>
+            <div class="revealed-year">2026</div>
+          </div>
+
+          <canvas id="scratchCanvas" width="270" height="220"></canvas>
+        </div>
+
+        <!-- HINGLISH SCROLL DOWN GUIDE BANNER -->
+        <div class="scroll-guide-banner" id="scrollBanner">
+          <a href="#programmeSection" class="scroll-btn-link" onclick="smoothScrollToProg(event)">
+            <span class="eng-text">👇 SCROLL DOWN FOR DETAILS 👇</span>
+            <span class="hin-text">Karyakram aur venue ki detail ke liye niche scroll karein</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- COUNTDOWN TIMER -->
+      <div class="countdown-card">
+        <div class="countdown-title">Counting Down To Forever</div>
+        <div class="countdown-grid">
+          <div class="time-slot">
+            <span class="number" id="days">00</span>
+            <span class="label">Days</span>
+          </div>
+          <div class="time-slot">
+            <span class="number" id="hours">00</span>
+            <span class="label">Hours</span>
+          </div>
+          <div class="time-slot">
+            <span class="number" id="mins">00</span>
+            <span class="label">Mins</span>
+          </div>
+          <div class="time-slot">
+            <span class="number" id="secs">00</span>
+            <span class="label">Secs</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRAMME TIMELINE -->
+      <div id="programmeSection">
+        <div class="section-header-box">
+          <div class="header-gold-line"></div>
+          <div class="section-main-heading">Programme Timeline</div>
+          <div class="header-gold-line reverse"></div>
+        </div>
+        
+        <div class="timeline-container">
+          <div class="timeline-item">
+            <span class="timeline-event">Nikah</span>
+            <span class="timeline-time">08:00 PM</span>
+          </div>
+          <div class="timeline-item">
+            <span class="timeline-event">Dinner</span>
+            <span class="timeline-time">08:30 PM</span>
+          </div>
+          <div class="timeline-item">
+            <span class="timeline-event">Rukhsati</span>
+            <span class="timeline-time">10:00 PM</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- WEDDING VENUE CARD -->
+      <div class="section-header-box">
+        <div class="header-gold-line"></div>
+        <div class="section-main-heading">Wedding Venue</div>
+        <div class="header-gold-line reverse"></div>
+      </div>
+
+      <div class="venue-card">
+        <div class="venue-icon-circle">🏛️</div>
+        <div class="venue-name">KRISHNA VATIKA</div>
+        <div class="venue-address">
+          Near Petrol Pump, In front of Dr. Roy School,<br>Agra, Uttar Pradesh
+        </div>
+        <a href="https://maps.google.com/?q=Krishna+Vatika+Near+Petrol+Pump+In+front+of+Dr.+Roy+School+Agra" target="_blank" class="btn-maps">
+          <span>🗺️</span> VIEW ON GOOGLE MAPS
+        </a>
+      </div>
+
+      <!-- HOME ADDRESS / RESIDENCE CARD -->
+      <div class="section-header-box">
+        <div class="header-gold-line"></div>
+        <div class="section-main-heading">Home Address</div>
+        <div class="header-gold-line reverse"></div>
+      </div>
+
+      <div class="venue-card">
+        <div class="venue-icon-circle">🏡</div>
+        <div class="venue-name">RESIDENCE</div>
+        <div class="venue-address">
+          28/12D /2 Pakki Sarai, Jyoti Nagar,<br>Shaheed Nagar, Agra, Uttar Pradesh - 282001
+        </div>
+        <a href="https://www.google.com/maps/place/Al-Fiya+Heritage+Kitchen/@27.1515441,78.0429762,17z/data=!3m1!4b1!4m6!3m5!1s0x397471b698f37a6b:0x9ba8da9c7a60d4af!8m2!3d27.1515441!4d78.0429762!16s%2Fg%2F11z0vcbxrg?entry=ttu" target="_blank" class="btn-maps">
+          <span>📍</span> VIEW HOME LOCATION
+        </a>
+      </div>
+
+      <!-- COMPLIMENTS & LITTLE ONES -->
+      <div class="little-ones-card">
+        <div class="little-tag">COMPLIMENTS & WELCOME FROM LITTLE ONES</div>
+        <div class="little-names">
+          Uzair • Aahid • Taimur • Aayaan • Armaan
+        </div>
+      </div>
+
+      <!-- SEND WISHES & DUA VIA WHATSAPP -->
+      <div class="wishes-card">
+        <div class="wishes-title">Send Blessings & Dua</div>
+        <div class="wishes-sub">Dulhe aur Dulhan ke liye apni Mubarakbaad / Dua direct WhatsApp par bhejein</div>
+        <textarea id="guestWishesText" class="wishes-input" rows="2" placeholder="Write your warm wishes here... (e.g. Shaadi Mubarak Imrana & Adil!)"></textarea>
+        <button class="btn-send-wishes" onclick="sendWishesOnWhatsApp()">
+          <span>💬</span> Send Wishes on WhatsApp
+        </button>
+      </div>
+
+      <!-- RSVP & CORDIAL INVITATION -->
+      <div class="rsvp-box">
+        <div class="rsvp-title">RSVP & CORDIAL INVITATION</div>
+        <div class="rsvp-names">
+          Imran, Rihan, Rizwan, Rohit, Gulzar, Sameer
+        </div>
+        <div class="call-btn-group">
+          <a href="tel:+919259140409" class="call-btn">
+            <span>📞</span> Call: +91 9259140409
+          </a>
+          <a href="tel:+917895240409" class="call-btn">
+            <span>📞</span> Call: +91 7895240409
+          </a>
+        </div>
+      </div>
+
+      <!-- FOOTER WITH VISIBLE SPIDER WEB & HANGING SPIDER -->
+      <div class="footer-web-container">
+        
+        <!-- Visible Intricate Spider Web in Left Corner -->
+        <svg class="visible-web-svg" viewBox="0 0 100 100">
+          <!-- Web Radial Spine Lines -->
+          <line x1="0" y1="0" x2="100" y2="0" />
+          <line x1="0" y1="0" x2="92" y2="38" />
+          <line x1="0" y1="0" x2="72" y2="72" />
+          <line x1="0" y1="0" x2="38" y2="92" />
+          <line x1="0" y1="0" x2="0" y2="100" />
+          <!-- Concentric Web Arcs -->
+          <path d="M 22,0 Q 20,10 16,16 Q 10,20 0,22" />
+          <path d="M 44,0 Q 40,20 31,31 Q 20,40 0,44" />
+          <path d="M 68,0 Q 60,30 48,48 Q 30,60 0,68" />
+          <path d="M 94,0 Q 82,42 66,66 Q 42,82 0,94" />
+        </svg>
+
+        <!-- Hanging Cute Spider with Gentle Sway Animation -->
+        <div class="hanging-spider-wrap">
+          <div class="spider-thread"></div>
+          <svg class="spider-body-svg" viewBox="0 0 24 24">
+            <!-- Spider Head & Body -->
+            <ellipse cx="12" cy="14" rx="4" ry="5" />
+            <circle cx="12" cy="8" r="2.5" />
+            <!-- Spider Legs Left -->
+            <path d="M 9 10 Q 5 7 3 9" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+            <path d="M 9 12 Q 4 12 2 15" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+            <path d="M 9 14 Q 4 16 3 19" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+            <path d="M 10 16 Q 6 21 5 23" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+            <!-- Spider Legs Right -->
+            <path d="M 15 10 Q 19 7 21 9" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+            <path d="M 15 12 Q 20 12 22 15" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+            <path d="M 15 14 Q 20 16 21 19" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+            <path d="M 14 16 Q 18 21 19 23" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+          </svg>
+        </div>
+
+        <div class="footer-blessing">
+          "May Allah bless this union and shower them with happiness, love, and eternal togetherness."<br>
+          #ImranaWedsAdil
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let isOpened = false;
+    let audioCtx = null;
+    let isMusicPlaying = false;
+
+    // 1. OPENING THE GATEFOLD
+    function openWeddingDoors(e) {
+      if (e) e.stopPropagation();
+      if (isOpened) return;
+      isOpened = true;
+
+      const overlay = document.getElementById('gateOverlay');
+      overlay.classList.add('opened');
+
+      // Body scroll unlock
+      document.body.style.overflowY = 'auto';
+
+      // Celebration Confetti Blast
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 100,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#cba358', '#faeed2', '#ffffff', '#24382b', '#d4af37']
+        });
+      }
+
+      // Hide overlay completely
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 1500);
+
+      // Start Ambient Sitar & Shahnai Raga
+      startAmbientTune();
+    }
+
+    const sealBtn = document.getElementById('sealWrapper');
+    sealBtn.addEventListener('click', openWeddingDoors);
+    sealBtn.addEventListener('touchstart', openWeddingDoors, { passive: true });
+
+    function smoothScrollToProg(e) {
+      if (e) e.preventDefault();
+      const el = document.getElementById('programmeSection');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // 2. SCRATCH CANVAS INITIALIZATION
+    const canvas = document.getElementById('scratchCanvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    let isRevealed = false;
+
+    function initScratch() {
+      ctx.fillStyle = '#374e3e';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = '#cba358';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(8, 8, canvas.width - 16, canvas.height - 16);
+
+      ctx.fillStyle = '#cba358';
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2 - 18, 75, 18, 0, Math.PI * 2);
+      ctx.arc(canvas.width / 2 + 18, 75, 18, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.font = "bold 15px Cinzel, serif";
+      ctx.fillStyle = '#faeed2';
+      ctx.textAlign = 'center';
+      ctx.fillText("SCRATCH HERE", canvas.width / 2, 132);
+      
+      ctx.font = "20px sans-serif";
+      ctx.fillText("✨ 🤍 ✨", canvas.width / 2, 160);
+    }
+    initScratch();
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * (canvas.width / rect.width),
+        y: (clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    function doScratch(e) {
+      if (!isDrawing || isRevealed) return;
+      const p = getPos(e);
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 22, 0, Math.PI * 2);
+      ctx.fill();
+
+      checkScratchStatus();
+    }
+
+    function checkScratchStatus() {
+      if (isRevealed) return;
+      const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let cleared = 0;
+      for (let i = 3; i < img.data.length; i += 16) {
+        if (img.data[i] === 0) cleared++;
+      }
+      if (cleared > (img.data.length / 16) * 0.32) {
+        isRevealed = true;
+        canvas.style.transition = 'opacity 0.6s ease';
+        canvas.style.opacity = '0';
+        setTimeout(() => {
+          canvas.style.display = 'none';
+          document.getElementById('scrollBanner').classList.add('show');
+        }, 600);
+
+        if (typeof confetti === 'function') {
+          confetti({ particleCount: 50, spread: 60, origin: { y: 0.55 } });
+        }
+      }
+    }
+
+    canvas.addEventListener('mousedown', (e) => { isDrawing = true; doScratch(e); });
+    window.addEventListener('mouseup', () => { isDrawing = false; });
+    canvas.addEventListener('mousemove', doScratch);
+
+    canvas.addEventListener('touchstart', (e) => { isDrawing = true; doScratch(e); }, { passive: true });
+    window.addEventListener('touchend', () => { isDrawing = false; });
+    canvas.addEventListener('touchmove', doScratch, { passive: true });
+
+    // 3. COUNTDOWN TIMER (Wednesday, November 18, 2026, 20:00:00)
+    const weddingDate = new Date("November 18, 2026 20:00:00").getTime();
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const diff = weddingDate - now;
+
+      if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('days').innerText = String(days).padStart(2, '0');
+        document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+        document.getElementById('mins').innerText = String(mins).padStart(2, '0');
+        document.getElementById('secs').innerText = String(secs).padStart(2, '0');
+      }
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // 4. FLOATING PETALS & GOLD FIREFLIES PARTICLES
+    const ambCanvas = document.getElementById('ambientCanvas');
+    const ambCtx = ambCanvas.getContext('2d');
+    let particles = [];
+
+    function resizeAmb() {
+      ambCanvas.width = window.innerWidth;
+      ambCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeAmb);
+    resizeAmb();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * ambCanvas.width;
+        this.y = Math.random() * ambCanvas.height - 50;
+        this.size = Math.random() * 5 + 3;
+        this.speedY = Math.random() * 0.8 + 0.4;
+        this.speedX = Math.sin(Math.random() * Math.PI) * 0.5;
+        this.rotation = Math.random() * 360;
+        this.rotationSpeed = (Math.random() - 0.5) * 1.5;
+        this.type = Math.random() > 0.4 ? 'petal' : 'goldDust';
+        this.opacity = Math.random() * 0.6 + 0.2;
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += Math.sin(this.y * 0.01) * 0.6;
+        this.rotation += this.rotationSpeed;
+        if (this.y > ambCanvas.height + 20) {
+          this.reset();
+          this.y = -20;
+        }
+      }
+      draw() {
+        ambCtx.save();
+        ambCtx.translate(this.x, this.y);
+        ambCtx.rotate((this.rotation * Math.PI) / 180);
+        ambCtx.globalAlpha = this.opacity;
+
+        if (this.type === 'petal') {
+          ambCtx.fillStyle = '#b84242';
+          ambCtx.beginPath();
+          ambCtx.ellipse(0, 0, this.size, this.size * 1.5, Math.PI / 4, 0, Math.PI * 2);
+          ambCtx.fill();
+        } else {
+          ambCtx.fillStyle = '#ecd394';
+          ambCtx.shadowBlur = 6;
+          ambCtx.shadowColor = '#d4af37';
+          ambCtx.beginPath();
+          ambCtx.arc(0, 0, this.size * 0.4, 0, Math.PI * 2);
+          ambCtx.fill();
+        }
+        ambCtx.restore();
+      }
+    }
+
+    for (let i = 0; i < 22; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateParticles() {
+      ambCtx.clearRect(0, 0, ambCanvas.width, ambCanvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // 5. PARALLAX CARD TILT EFFECT (MOUSE & GYROSCOPE)
+    const tiltCard = document.getElementById('tiltCard');
+    window.addEventListener('mousemove', (e) => {
+      if (!isOpened) return;
+      const x = (e.clientX / window.innerWidth - 0.5) * 10;
+      const y = (e.clientY / window.innerHeight - 0.5) * 10;
+      tiltCard.style.transform = `perspective(800px) rotateY(${x}deg) rotateX(${-y}deg)`;
+    });
+
+    // 6. WHATSAPP WISHES DIRECT ACTION
+    function sendWishesOnWhatsApp() {
+      const text = document.getElementById('guestWishesText').value.trim();
+      const message = encodeURIComponent(text || "Mubarak ho! Wishing Imrana and Adil Khan a joyful married life!");
+      window.open(`https://wa.me/919259140409?text=${message}`, '_blank');
+    }
+
+    // 7. RICH SHAHNAI / SITAR RAGA SYNTHESIZER
+    function startAmbientTune() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const notes = [
+          { f: 261.63, d: 0.8 }, // Sa
+          { f: 293.66, d: 0.6 }, // Re
+          { f: 329.63, d: 1.0 }, // Ga
+          { f: 369.99, d: 0.8 }, // Ma
+          { f: 392.00, d: 1.2 }, // Pa
+          { f: 440.00, d: 0.9 }, // Dha
+          { f: 493.88, d: 1.0 }, // Ni
+          { f: 523.25, d: 1.8 }  // Sa
+        ];
+
+        let time = audioCtx.currentTime;
+        notes.forEach((note) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(note.f, time);
+
+          gain.gain.setValueAtTime(0.0001, time);
+          gain.gain.exponentialRampToValueAtTime(0.06, time + 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.0001, time + note.d);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(time);
+          osc.stop(time + note.d + 0.1);
+
+          time += note.d * 0.75;
+        });
+
+        isMusicPlaying = true;
+        document.getElementById('audioPill').classList.remove('paused');
+      } catch (err) {
+        console.log("Audio ready");
+      }
+    }
+
+    function toggleAudio() {
+      if (!audioCtx) {
+        startAmbientTune();
+        return;
+      }
+      const pill = document.getElementById('audioPill');
+      if (audioCtx.state === 'running') {
+        audioCtx.suspend();
+        pill.classList.add('paused');
+        document.getElementById('audioText').innerText = 'PAUSED';
+      } else {
+        audioCtx.resume();
+        pill.classList.remove('paused');
+        document.getElementById('audioText').innerText = 'SHAHNAI MUSIC';
+      }
+    }
+  </script>
+</body>
+</html>
